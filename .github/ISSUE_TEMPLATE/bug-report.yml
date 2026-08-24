@@ -1,0 +1,40 @@
+name: Bug Report
+description: Report incorrect output, crashes, or unexpected behavior
+labels: [bug]
+
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Which version of @panmdaa/server are you using?
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal code that reproduces the issue.
+      render: typescript
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Node version, runtime (Node / Bun / browser), OS.
+      placeholder: |
+        Node 22.x, Ubuntu 24.04
+    validations:
+      required: false

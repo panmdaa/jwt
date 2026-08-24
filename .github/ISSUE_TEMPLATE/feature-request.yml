@@ -1,0 +1,40 @@
+name: Feature Request
+description: Suggest a new API, utility, or improvement
+labels: [enhancement]
+
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem are you trying to solve? What is missing or awkward in the current API?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the API, behavior, or output you'd like to see.
+      placeholder: |
+        ```typescript
+        import { something } from '@panmdaa/server'
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any workarounds or alternative approaches you've tried.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Links, references, or examples from other libraries.
+    validations:
+      required: false

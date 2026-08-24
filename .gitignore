@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Package manager lockfiles (project uses npm, but keep all ignored)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+deno.lock
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Editor
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage/
+
+# Temp
+.temp/
+
+# Tooling
+.atl/
