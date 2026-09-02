@@ -1,7 +1,7 @@
 {
 	"name": "@panmdaa/jwt",
 	"private": false,
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Zero-dependency TypeScript library for signing and verifying JSON Web Tokens (HMAC, RSA, ECDSA) based on RFC 7519/7515/7518",
 	"license": "MIT",
 	"author": {
