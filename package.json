@@ -1,8 +1,8 @@
 {
-	"name": "@panmdaa/server",
+	"name": "@panmdaa/jwt",
 	"private": false,
-	"version": "0.2.1",
-	"description": "Zero-dependency TypeScript HTTP and WebSocket server with a compiled-radix router, built on Node's native http, https and http2 transport",
+	"version": "0.0.0",
+	"description": "Zero-dependency TypeScript library for signing and verifying JSON Web Tokens (HMAC, RSA, ECDSA) based on RFC 7519/7515/7518",
 	"license": "MIT",
 	"author": {
 		"name": "Panmdaa",
@@ -11,12 +11,14 @@
 	},
 	"keywords": [
 		"panmdaa",
-		"http",
-		"http2",
-		"websocket",
-		"server",
-		"router",
-		"radix-tree",
+		"jwt",
+		"jws",
+		"jwa",
+		"hmac",
+		"rsa",
+		"ecdsa",
+		"auth",
+		"token",
 		"typescript",
 		"zero-dependencies"
 	],
@@ -31,32 +33,30 @@
 	},
 	"scripts": {
 		"prepare": "tsup && tsc -p tsconfig.build.json",
-		"build": "node scripts/run-all.mjs && tsup && tsc -p tsconfig.build.json",
+		"build": "tsup && tsc -p tsconfig.build.json",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint --write .",
 		"format": "biome format --write .",
-		"bench": "npm --prefix bench run bench",
-		"bench:router": "npm --prefix bench run bench:router",
-		"bench:http": "npm --prefix bench run bench:http",
-		"bench:http:post": "npm --prefix bench run bench:http:post",
-		"bench:middleware": "npm --prefix bench run bench:middleware",
-		"bench:parse": "npm --prefix bench run bench:parse",
-		"bench:ws": "npm --prefix bench run bench:ws"
+		"bench": "npm --prefix bench run bench"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/panmdaa/server.git"
+		"url": "git+https://github.com/panmdaa/jwt.git"
 	},
-	"homepage": "https://github.com/panmdaa/server#readme",
+	"homepage": "https://github.com/panmdaa/jwt#readme",
 	"bugs": {
-		"url": "https://github.com/panmdaa/server/issues"
+		"url": "https://github.com/panmdaa/jwt/issues"
 	},
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
+		},
+		"./middleware": {
+			"types": "./dist/middleware/index.d.ts",
+			"default": "./dist/middleware/index.js"
 		}
 	},
 	"types": "./dist/index.d.ts",
@@ -70,7 +70,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.6",
 		"@types/node": "^22.15.0",
-		"mime-db": "^1.54.0",
 		"tsup": "^8.4.0",
 		"typescript": "^7.0.2",
 		"vitest": "^3.2.7"

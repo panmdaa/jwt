@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-`@panmdaa/server` is in early development.
+`@panmdaa/jwt` is in early development.
 
 Security fixes are guaranteed for:
 
@@ -61,7 +61,7 @@ Once a fix is available, the project may publish:
 
 ## Security Design Notes
 
-`@panmdaa/server` reduces risk by:
+`@panmdaa/jwt` reduces risk by:
 
 - maintaining zero runtime dependencies
 - keeping the API surface minimal and predictable

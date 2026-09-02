@@ -1,8 +1,8 @@
-# Contributing to @panmdaa/server
+# Contributing to @panmdaa/jwt
 
-Thank you for considering contributing to `@panmdaa/server`.
+Thank you for considering contributing to `@panmdaa/jwt`.
 
-`@panmdaa/server` is a zero-dependency TypeScript HTTP server over Node's native transport: compiled radix-tree routing, code-generated middleware pipelines, WebSockets with permessage-deflate, and HTTP/2 (h2c, ALPN, extended CONNECT). It ships as pure ESM and is tree-shakeable. Contributions that improve correctness, performance, documentation, tests, and API clarity are welcome.
+`@panmdaa/jwt` is a zero-dependency TypeScript library for signing and verifying JSON Web Tokens (HMAC, RSA, ECDSA) based on RFC 7519/7515/7518. It ships as pure ESM and is tree-shakeable. Contributions that improve correctness, performance, documentation, tests, and API clarity are welcome.
 
 ## Repository Layout
 
@@ -12,7 +12,7 @@ Thank you for considering contributing to `@panmdaa/server`.
 - `docs/` — architecture, usage, and subsystem documentation.
 - `.github/workflows/` — CI and release automation.
 
-The package exposes a single entry point — `@panmdaa/server` — which re-exports everything (`error`, `http`, `middleware`, `router`, `ws`).
+The package exposes a single entry point — `@panmdaa/jwt` — which re-exports everything from the JWT signing and verification modules.
 
 ## Ways To Contribute
 

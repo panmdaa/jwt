@@ -1,5 +1,7 @@
+export { sign } from "./jwt/sign";
+export { verify } from "./jwt/verify";
+export { decode } from "./jwt/decode";
+
+export type { Algorithm } from "./algorithms";
 export * from "./error";
-export * from "./http";
-export * from "./middleware";
-export * from "./router";
-export * from "./ws";
+

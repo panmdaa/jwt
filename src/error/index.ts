@@ -1,2 +1,2 @@
+export * from "./jwt-error";
 export * from "./errors";
-export * from "./http-error";
