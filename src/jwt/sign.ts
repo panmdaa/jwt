@@ -59,8 +59,6 @@ export function sign(
 		throw new Error("Payload must be a plain object");
 	}
 
-	serializeToBase64Url(payload);
-
 	const normalizedPayload = { ...payload };
 	const currentTime = currentTimeInSeconds();
 
