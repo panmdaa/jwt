@@ -1,5 +1,5 @@
-name: Feature Request
-description: Suggest a new API, utility, or improvement
+name: JWT Feature Request
+description: Suggest a new JWT API, utility, or improvement
 labels: [enhancement]
 
 body:
@@ -7,7 +7,7 @@ body:
     id: problem
     attributes:
       label: Problem
-      description: What problem are you trying to solve? What is missing or awkward in the current API?
+      description: What problem are you trying to solve with JWT? What functionality is missing or awkward in the current API?
     validations:
       required: true
 
@@ -15,19 +15,36 @@ body:
     id: solution
     attributes:
       label: Proposed Solution
-      description: Describe the API, behavior, or output you'd like to see.
+      description: Describe the JWT API, behavior, or output you'd like to see.
       placeholder: |
         ```typescript
-        import { something } from '@panmdaa/server'
+        import { jwt } from '@panmdaa/jwt'
+
+        const token = jwt.sign(payload, secret, {
+          expiresIn: '1h'
+        })
         ```
     validations:
       required: true
 
   - type: textarea
+    id: token
+    attributes:
+      label: JWT Requirements
+      description: Describe any requirements related to signing, verification, claims, expiration, algorithms, or token structure.
+      placeholder: |
+        - Algorithm: HS256
+        - Expiration: 1 hour
+        - Required claims: sub, iat, exp
+        - Verification behavior: ...
+    validations:
+      required: false
+
+  - type: textarea
     id: alternatives
     attributes:
       label: Alternatives Considered
-      description: Any workarounds or alternative approaches you've tried.
+      description: Any workarounds, existing JWT libraries, or alternative approaches you've tried.
     validations:
       required: false
 
@@ -35,6 +52,6 @@ body:
     id: context
     attributes:
       label: Additional Context
-      description: Links, references, or examples from other libraries.
+      description: Links, references, examples, or APIs from other JWT libraries that could help define the feature.
     validations:
       required: false
