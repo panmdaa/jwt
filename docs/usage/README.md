@@ -1,40 +1,48 @@
 # Usage
 
-This is the **how-to** for `@panmdaa/server`: practical guides on using the library the way it was designed to be used.
+This is the how-to guide for `@panmdaa/jwt`: signing tokens, verifying them,
+inspecting metadata, handling errors, and wiring the framework-agnostic
+middleware into an application.
 
 ## Reading order
 
 | Guide | What you'll learn |
 |-------|-------------------|
-| [Quick start](getting-started.md) | Install, first server, routing, responding |
-| [HTTP](http.md) | Routes, params, query, body, response, errors |
-| [Middleware](middleware.md) | Custom middleware, cors, securityHeaders, composition |
-| [WebSockets](websockets.md) | Upgrade, events, close handshake, heartbeat, verifyClient, protocols |
-| [HTTP/2 & TLS](http2.md) | h2, ALPN, extended CONNECT |
-| [Configuration & limits](configuration.md) | `ServerOptions`, `maxBodySize`, WebSocket options |
-| [Best practices](best-practices.md) | The "ideal" way to structure an app with this library |
+| [Getting started](getting-started.md) | Install, sign, verify, and decode a token |
+| [Token lifecycle](claims.md) | Claims, expiration, issuer, audience, and subject checks |
+| [Middleware](middleware.md) | Use `jwtAuth` with any context-shaped framework |
+| [Configuration](configuration.md) | Signing and verification options |
+| [Errors](errors.md) | Typed JWT failures and how to map them in an app |
+| [Key management](keys.md) | HMAC secrets, RSA keys, ECDSA keys, and algorithm allowlists |
+| [Best practices](best-practices.md) | Practical security guidance for production use |
 
-For the internals (why things work this way, what runs when), see the [architecture](../architecture/overview.md) docs. Every guide links to the relevant reference doc.
+For internal design details, see the [architecture](../architecture/overview.md)
+docs.
 
-## Key concepts in one minute
+## Key concepts
 
 ```ts
-import { Server } from "@panmdaa/server";
+import { sign, verify } from "@panmdaa/jwt";
 
-const server = new Server();
+const token = sign(
+  { role: "admin" },
+  process.env.JWT_SECRET!,
+  { alg: "HS256", expiresIn: "15m", issuer: "panmdaa" },
+);
 
-server.get("/user/:id", ({ params, response }) => {
-  response.send(`Hello ${params.id}!`);
+const payload = verify(token, process.env.JWT_SECRET!, {
+  algorithms: ["HS256"],
+  issuer: "panmdaa",
 });
-
-server.listen(3000);
 ```
 
-- `new Server(options?)` starts with nothing and mounts onto Node's `http`/`https`/`http2` transport.
-- `server.use(mw)` registers middleware for routes added **after** it.
-- `server.get/post/put/delete/patch/options/head/all/query/ws` register routes. Each receives a typed context.
-- `ctx.response.send(...)` auto-completes the request; if you don't write, the server auto-ends.
-- `ctx.body` (JSON, form, raw, stream) is available only on body-capable routes (`POST/PUT/PATCH/DELETE/QUERY`).
-- WebSockets live in their own tree: `server.ws("/path", handler)`.
+- `sign(payload, key, options)` creates a signed three-segment JWT.
+- `verify(token, key, options)` validates structure, algorithm policy,
+  signature, time claims, and configured claim expectations.
+- `decode(token)` parses header and payload without verifying the signature;
+  use it only for inspection.
+- `jwtAuth(options)` builds framework-agnostic middleware that stores the
+  verified payload in `context.state`.
 
-**One entry point**: everything — `Server`, `Router`, middleware, WebSockets, errors — is exported from `@panmdaa/server`. See [Development](../development/tooling.md).
+The root entry point is `@panmdaa/jwt`. Middleware lives in
+`@panmdaa/jwt/middleware`.

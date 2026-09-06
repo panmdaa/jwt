@@ -1,91 +1,59 @@
-# Quick start
-
-Five minutes to a running server.
+# Getting Started
 
 ## Install
 
 ```sh
-npm install @panmdaa/server
+npm install @panmdaa/jwt
 ```
 
-Requires Node.js >= 18 (`package.json` `engines`). Pure ESM — use `import`, not `require`.
+Requires Node.js >= 18 and pure ESM imports.
 
-## Your first server
+## Sign a token
 
 ```ts
-import { Server } from "@panmdaa/server";
+import { sign } from "@panmdaa/jwt";
 
-const server = new Server();
-
-server.get("/", ({ response }) => {
-  response.send("Hello, world!");
-});
-
-server.get("/user/:id", ({ params, response }) => {
-  response.json({ id: params.id });
-});
-
-server.listen(3000);
-console.log(`Listening on http://localhost:${server.address()?.port}/`);
+const token = sign(
+  { role: "admin" },
+  process.env.JWT_SECRET!,
+  {
+    alg: "HS256",
+    expiresIn: "15m",
+    issuer: "panmdaa",
+    audience: "admin-api",
+    subject: "user-123",
+  },
+);
 ```
 
-## What just happened
+`sign()` accepts custom application claims plus standard JWT claims. Explicit
+options such as `issuer`, `audience`, `subject`, `expiresIn`, and `notBefore`
+take precedence over claims already present in the payload.
 
-- `new Server()` creates a native `http.createServer` under the hood (`src/http/server/utils.ts`).
-- `server.get("/", handler)` registers a static route. The handler receives a **context** with typed `params` — `/user/:id` gives you `params.id: string` (compile-time checked via the `Path` type).
-- `response.send()` / `response.json()` write the response. If your handler doesn't write, the server **auto-ends** it for you (`server.ts:116-145`).
-
-## Reading the request
+## Verify a token
 
 ```ts
-server.post("/login", async ({ body, response }) => {
-  const { email, password } = await body.json();
-  // ...
-  response.json({ ok: true });
+import { verify } from "@panmdaa/jwt";
+
+const payload = verify(token, process.env.JWT_SECRET!, {
+  algorithms: ["HS256"],
+  issuer: "panmdaa",
+  audience: "admin-api",
+  subject: "user-123",
 });
 ```
 
-`body` is lazy and cached: `json()`, `text()`, `raw()`, `formData()`, `arrayBuffer()`, `stream()` — call the one you need, once. See [Body](http.md#body).
+Verification fails closed. The library checks token shape, the allowed
+algorithm list, the cryptographic signature, time claims, and configured
+issuer/audience/subject expectations before returning the payload.
 
-## Middleware
+## Decode for inspection
 
 ```ts
-server.use(({ response }, next) => {
-  response.header("x-powered-by", "panmdaa");
-  next();
-});
+import { decode } from "@panmdaa/jwt";
 
-server.get("/", ({ response }) => response.send("hi"));
+const { header, payload } = decode(token);
 ```
 
-Middleware applies to routes registered **after** it. See [Middleware](middleware.md).
-
-## WebSocket
-
-```ts
-server.ws("/live", ({ socket }) => {
-  socket.send("welcome!");
-  socket.on("message", ({ data }) => socket.send(`echo: ${data}`));
-});
-```
-
-WebSocket routes match by **path only** and live in a separate tree — `/*` won't shadow HTTP routes. See [WebSockets](websockets.md).
-
-## Errors
-
-Throw `HttpError` subclasses (or build your own) and the server maps them:
-
-```ts
-import { NotFound } from "@panmdaa/server";
-
-server.get("/teapot", () => {
-  throw new NotFound();
-});
-```
-
-See [Errors](http.md#errors).
-
-## Next steps
-
-- [HTTP](http.md) — routes, query, body, responses in depth.
-- [Best practices](best-practices.md) — structuring a real app.
+`decode()` does not verify the signature. It is useful for logs and debugging,
+but it must not be used for authorization decisions.

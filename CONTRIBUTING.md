@@ -6,9 +6,9 @@ Thank you for considering contributing to `@panmdaa/jwt`.
 
 ## Repository Layout
 
-- `src/` — source, organized in modular subpackages (`http`, `router`, `ws`, `middleware`, `error`), each re-exported from its own `index.ts` barrel.
-- `test/` — vitest test suite (HTTP, router, WebSocket, context, errors).
-- `bench/` — benchmarks against other Node HTTP/WebSocket libraries.
+- `src/` — source, organized around JWT signing, verification, algorithms, encoding, middleware, errors, and utilities.
+- `test/` — vitest test suite for algorithms, encoding, JWT workflows, middleware, errors, and utilities.
+- `bench/` — benchmarks for HMAC, RSA, and ECDSA signing and verification.
 - `docs/` — architecture, usage, and subsystem documentation.
 - `.github/workflows/` — CI and release automation.
 
@@ -52,16 +52,10 @@ npm run format
 npm run build
 ```
 
-If you touch performance-sensitive code, run the benchmark suite to check for regressions. Individual suites are available too:
+If you touch performance-sensitive code, run the benchmark suite to check for regressions:
 
 ```bash
 npm run bench              # everything
-npm run bench:router
-npm run bench:http
-npm run bench:http:post
-npm run bench:middleware
-npm run bench:parse
-npm run bench:ws
 ```
 
 ## Contribution Guidelines
@@ -100,10 +94,10 @@ Before opening a PR, make sure:
 Use [Conventional Commits](https://www.conventionalcommits.org/). Scope the change when it touches a subsystem:
 
 ```
-feat: add HTTP/2 extended CONNECT to ws routes
-fix(router): resolve wildcard precedence for static segments
-perf(ws): reduce allocations in frame parser hot path
-docs(http): document body streaming limits
+feat: add complete JWT verification output
+fix(jwt): reject malformed token segments consistently
+perf(hmac): reduce allocations in signing hot path
+docs(middleware): clarify cookie token extraction
 ```
 
 ## Review Expectations

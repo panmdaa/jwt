@@ -1,120 +1,79 @@
-# Design decisions
+# Design Decisions
 
-This document records the *why* behind the architecture. Each entry states the problem, the decision, and the evidence that justifies it.
+This document records the main architectural choices behind `@panmdaa/jwt`.
 
 ## 1. Zero runtime dependencies
 
-**Problem**: most HTTP/WS server libraries pull in deps (routing, `bufferutil`/`ws`, body parsers, multipart, cookies).
+**Problem**: authentication libraries sit on a security boundary. Every runtime
+dependency expands the trusted code surface.
 
-**Decision**: everything is implemented in-repo. `node:zlib` is used for deflate/inflate (a native module, not a dependency). The only `devDependencies` are tooling: TypeScript, tsup, biome, vitest, mime-db (data source, compiled into `src/generated/mime.ts`).
+**Decision**: all JWT, JWS, encoding, validation, and error logic lives in this
+repository. Cryptographic operations use Node's built-in `node:crypto` module.
 
-**Why**: a dependency is trust and maintenance you can't inspect. With zero deps the entire hot path is auditable in one repo, the bundle is tree-shakable (`sideEffects: false`, `package.json:21`), and there are no version-conflict or supply-chain surprises.
+**Why**: the full runtime path remains auditable in one package, avoids
+supply-chain surprises, and keeps installation small.
 
-## 2. Three-tier routing: static map → compiled regex → radix trie
+## 2. Explicit algorithm allowlists
 
-**Problem**: a router must be fast for the common case (static URLs) yet still express params/wildcards; a plain `Map<path, handler>` can't, an array scan is O(n), and a single regex per route has backtracking.
+**Problem**: a JWT header is attacker-controlled input. Trusting its `alg`
+field directly can allow algorithm confusion.
 
-**Decision**: `InternalRadixTree.find` tries, in order:
+**Decision**: `verify()` requires `algorithms`, and the header algorithm must
+match that caller-provided allowlist before signature verification runs.
 
-1. **Flat static map** — O(1), zero allocation, immutable shared `FindResult` (`internal-radix-tree.ts:240-245`). Inspired by hono's linear router.
-2. **One compiled regex per method** — dynamic routes are factored into a trie and emitted as a single `RegExp`, so matching is one native `exec()` (`internal-radix-tree.ts:302`, `buildMatcher` `:97-204`). If routes conflict, this tier is skipped.
-3. **Char-code radix trie traversal** — the conflict-safe fallback preserving registration precedence (`radix-tree/utils.ts:116-236`).
+**Why**: the verifier accepts only the algorithms the application expected for
+that key and issuer.
 
-**Evidence** `[bench]`: see `bench/src/router.bench.ts` — static lookups and dynamic matcher beat plain-map and find-my-way baselines across `ROUTES`/`DEEP_ROUTES`/`LARGE_ROUTES` (see [Benchmarking](../development/benchmarking.md)).
+## 3. `none` is forbidden
 
-## 3. Lazy construction of the radix tree
+**Problem**: unsigned JWTs do not authenticate anything.
 
-**Problem**: building a radix trie on every registration is wasted work when routes are registered in bulk at startup.
+**Decision**: the library rejects `none` as a policy violation.
 
-**Decision**: `RadixTree.add` pushes into a `deferred` array; the tree is built on the first `find()`/`methods()` and the find function is swapped to the built engine afterwards (`radix-tree.ts:9-25`). One-time amortized cost, O(1) dispatch afterwards.
+**Why**: accepting unsigned tokens would make "token exists" look too much like
+"token is valid".
 
-## 4. Optional params compiled away
+## 4. Algorithm implementations own key validation
 
-**Problem**: `:name?` segments force runtime branching in the matcher.
+**Problem**: each algorithm family has different key requirements. HMAC uses a
+shared secret, RSA uses asymmetric keys, and ECDSA additionally depends on the
+expected curve.
 
-**Decision**: optional segments are expanded into *concrete* routes at registration time (`internal-radix-tree.ts:247-289`) — a mid-path optional becomes two routes, a tail of optionals becomes N. The matcher never sees a `?`.
+**Decision**: HMAC, RSA, and ECDSA implementations validate key type and curve
+inside `src/algorithms/`.
 
-## 5. Compiling middleware chains into one function
+**Why**: the crypto boundary stays close to the crypto operation, and all JWT
+workflows get the same validation behavior.
 
-**Problem**: running N middlewares as a loop with per-call `next` closures allocates and deoptimizes; Express-style arrays are slower and can't short-circuit.
+## 5. Signing options override payload claims
 
-**Decision**: `compileHandler` code-generates a single `new Function` that inlines the chain (`compile.ts`). Key semantics:
+**Problem**: callers may pass a payload that already contains standard claims
+while also passing explicit signing options.
 
-- **Conditional await** — a handler is awaited only when it actually returned a thenable (`compile.ts:33`), so sync handlers pay **no microtask per request**.
-- `next` is a shared `advance()` closure that flips a `nextCalled` flag — no per-call allocation.
-- **Sequential pipeline, not Express**: a middleware that returns a promise *and* calls `next()` blocks the following handlers until it settles (the compiled code `await`s before the next handler). This is a deliberate difference from Express, which does not await. Document it — it affects how async middleware is written.
+**Decision**: `sign()` merges option-driven claims last.
 
-**Evidence** `[bench]`: chains of 3 handlers compile ~2x faster than a plain loop, 5-handler ~1.7x (see [Benchmarking](../development/benchmarking.md)).
+**Why**: security-sensitive claims such as `issuer`, `audience`, `subject`, and
+`expiresIn` should be controlled by the call site, not by arbitrary payload
+input.
 
-## 6. `response`, `headers`, `body`, `query`, `cookies` are lazy getters
+## 6. `decode()` is intentionally untrusted
 
-**Problem**: a request that just returns a string shouldn't pay for building a response object, parsing cookies it never reads, or allocating body representations.
+**Problem**: applications often need to inspect token metadata before choosing
+a key, but decoded claims are not authenticated.
 
-**Decision**: every `ResponseContext`/`BodyContext` member is a cached lazy getter (`http-handler.ts:44`, `response.ts:30`, `body.ts:23`). `response` is only constructed when the handler sends something; `raw()/json()/text()/…` cache per representation and reuse each other (e.g. `json()` reuses `cachedText` to avoid a second Buffer→string conversion, `body.ts:37-51`).
+**Decision**: `decode()` only parses the header and payload. It does not verify
+the signature or validate claims.
 
-**Evidence** `[bench]`: lazy response got a ~5.3% improvement on context-only workloads vs eager construction (see [Benchmarking](../development/benchmarking.md)).
+**Why**: the API is useful for logging and key selection while keeping trust
+decisions attached to `verify()`.
 
-## 7. Auto-finish responses in `Server.run`
+## 7. Middleware stays framework-agnostic
 
-**Problem**: handlers that only set headers/status would leave responses hanging open.
+**Problem**: JWT verification should not depend on Express, Fastify, Koa, or
+any specific HTTP abstraction.
 
-**Decision**: `run()` auto-ends the response: if the handler returned a promise, the response is ended when it settles; if synchronous, it's ended immediately (`server.ts:116-145`). "Only async handlers allocate a promise here." The `response.writableEnded` guard covers both HTTP/1 and the http2 wrapper.
+**Decision**: `jwtAuth()` accepts a small structural context: `headers`,
+`cookies`, `state`, and `next()`.
 
-## 8. WebSocket: zero-alloc parse, zero-copy writes, cork
-
-**Problem**: frame parsing and writes are the WS hot path; per-frame allocation and copies destroy throughput.
-
-**Decision**:
-
-- **Reusable frame**: `parseFrameInto(buffer, out, …)` writes into a caller-provided `ParsedFrame` (`parser.ts:28`).
-- **Zero-copy payload**: `payload = buffer.subarray(...)` is a view, and unmasking happens **in place** (`parser.ts:96-98`).
-- **Two-level unmasking**: unrolled 8-byte loop below 64 bytes, three-pass `Uint32Array` word path (with a rotated mask word absorbing alignment) above (`parser.ts:133-237`).
-- **`cork()`/`uncork()`**: header+payload writes are coalesced into one kernel write (`connection.ts:586-592`); text sends avoid the `Buffer.from` conversion entirely (`connection.ts:599-612`).
-- **Zero-listener fast path**: `text`/`binary`/`message` events allocate only when there are listeners (`emitMessage`, `connection.ts:415-450`).
-
-## 9. permessage-deflate: always no-context-takeover, threshold, concurrency gate
-
-**Problem**: deflate contexts bloat memory and zlib calls must not starve the event loop.
-
-**Decision**:
-
-- `serverNoContextTakeover` + `clientNoContextTakeover` are always negotiated (`permessage-deflate.ts:38,54`) — the context is reset after every message, trading a small compression ratio for bounded memory and interleavability.
-- Compression below `threshold = 1024` bytes is skipped (`permessage-deflate.ts:78-84`).
-- If compression doesn't shrink the payload, the **original** is sent (`permessage-deflate.ts:147-153`).
-- `ZlibConcurrencyGate` caps concurrent inflate/deflate operations, shared per limit via a module-level cache (`concurrency-gate.ts:28-42`) — zlib is native and synchronous per call but awaited here; unbounded concurrency would stall the event loop.
-
-## 10. Unref'd timers everywhere
-
-**Problem**: heartbeat intervals and close timeouts would keep the process alive.
-
-**Decision**: `setInterval`/`setTimeout` in heartbeat and close handshake are `unref()`'d (`heartbeat.ts:29-33`, `connection.ts:680-688`), so an idle server can exit cleanly.
-
-## 11. Error system generated from status codes
-
-**Problem**: ~60 named error classes with identical shape is boilerplate.
-
-**Decision**: `createHttpErrorClass(status, className, defaultMessage)` generates them from `STATUS_MESSAGES` (`http-error.ts:94-112`, `errors.ts:3-260`). Special cases needing constructor args (`MethodNotAllowed(method)`, `PayloadTooLarge(maxBodySize)`, `UnsupportedMediaType`) are hand-written.
-
-## 12. HTTP/2 as a synthesized request instead of native conversion
-
-**Problem**: Node's native HTTP/2 request/response conversion would also consume extended CONNECT (WebSocket-over-HTTP/2) streams.
-
-**Decision**: `Server.handleStream` first asks `WebSocketUpgrader.handleStream` to consume CONNECT streams; anything else becomes a hand-built `ServerRequest` (`createHttp2StreamRequest`) and `Http2StreamResponse`, deferring `stream.respond()` until the first write (`http2.ts:78-81`). This keeps one code path for HTTP/1 and HTTP/2.
-
-## 13. Middleware baked into routes at registration
-
-**Problem**: naive middleware must be re-run for every route on every request.
-
-**Decision**: `use()` just appends to `this.middlewares`; `addRoute` composes `compileHandler(...middlewares, handler)` **once**, at registration (`router.ts:39-42`). A `use()` after a route is registered does not affect it. Same for WebSocket routes (`router.ts:50-56`).
-
-## 14. Separate WebSocket routing tree
-
-**Problem**: `server.ws("/*", …)` is a catch-all that must not shadow HTTP routes, and WS routes match by path only.
-
-**Decision**: WS routes live in their own `wsTree` keyed by the pseudo-method `WS_METHOD = "WS"` (`router.ts:14`). HTTP and WS never collide.
-
-## 15. `QUERY` pseudo-method for body-capable "read" routes
-
-**Problem**: sometimes you need a body-capable route that isn't `POST/PUT/PATCH/DELETE`.
-
-**Decision**: `query()` registers under the `QUERY` pseudo-method; `Server.createContext` maps it to `ContextBodyHandler` (`server.ts:98`), so `ctx.body` is available without a real HTTP method.
+**Why**: applications can adapt the middleware to their own framework while the
+library remains focused on token extraction and verification.

@@ -1,62 +1,26 @@
 # Examples
 
-Standalone, copy-paste examples for `@panmdaa/server`. Every file is
-self-contained — drop it in your project (after `npm install @panmdaa/server`)
-and run it.
-
-## Run in this repo
-
-From the repo root, each example resolves `@panmdaa/server` via the
-package's own `exports` (self-reference). Requires Node 22.6+ for
-`--experimental-strip-types`:
+Standalone, copy-paste examples for `@panmdaa/jwt`. Every file is
+self-contained and can be run from the repository root with Node 22.6+:
 
 ```sh
-node --experimental-strip-types examples/basic/hello.ts
+node --experimental-strip-types examples/hmac.ts
 ```
 
-## `basic/` — first server, routing
-
-| File | What it shows |
-|------|---------------|
-| `hello.ts` | Minimal server: `get`, params, `send`/`json` |
-| `routing.ts` | Verbs, wildcards, optional segments, `group`, `router` |
-
-## `http/` — HTTP features
-
-| File | What it shows |
-|------|---------------|
-| `middleware.ts` | `cors`, `securityHeaders`, custom middleware, short-circuit |
-| `body.ts` | Lazy body: `json`, `text`, `formData`, `raw` |
-| `errors.ts` | `HttpError` subclasses, `onError` hook, `isHttpError` |
-| `static.ts` | `file`/`download` with auto mime + Content-Length |
-
-## `websocket/`
-
-| File | What it shows |
-|------|---------------|
-| `chat.ts` | WS routes, heartbeat, broadcast, `verifyClient` |
-
-## `http2/`
-
-| File | What it shows |
-|------|---------------|
-| `tls.ts` | HTTP/2 (h2c) + TLS via ALPN, WS over extended CONNECT |
-
-## `rest-api/`
-
-| File | What it shows |
-|------|---------------|
-| `todos.ts` | Full CRUD REST API combining everything |
-
-## Copy-paste into your own project
+When copied into your own project, install the package first:
 
 ```sh
-npm install @panmdaa/server
+npm install @panmdaa/jwt
 ```
 
-Then copy any example file and run it with `npx tsx <file>` (or compile with
-`tsc`). Imports always come from the single entry point:
+## Files
 
-```ts
-import { Server, Router, cors, securityHeaders, NotFound } from "@panmdaa/server";
-```
+| File | What it shows |
+|------|---------------|
+| `hmac.ts` | Sign and verify an HS256 token with issuer, audience, subject, and expiration checks |
+| `decode.ts` | Decode token metadata for logging or debugging without trusting it |
+| `rsa.ts` | Sign with an RSA private key and verify with the matching public key |
+| `middleware.ts` | Use the framework-agnostic `jwtAuth` adapter with a minimal context object |
+
+All signing, verification, decoding, errors, and public types come from
+`@panmdaa/jwt`. The middleware adapter comes from `@panmdaa/jwt/middleware`.
