@@ -1,5 +1,6 @@
 import type { Algorithm } from "../algorithms";
 import { MalformedToken } from "../error/errors";
+import { sign } from "../jwt/sign";
 import { verify, type JwtVerificationKey } from "../jwt/verify";
 import type { JwtContext, JwtNext, JwtTokenSource } from "./types";
 

@@ -5,20 +5,20 @@
  * state object is structurally compatible with this contract.
  */
 export interface JwtContext<
-	State extends Record<string, unknown> = Record<string, unknown>,
+  State extends Record<string, unknown> = Record<string, unknown>,
 > {
-	/** Read-only access to headers. */
-	headers?: {
-		get(name: string): string | undefined;
-		[name: string]: unknown;
-	};
-	/** Optional cookie access. */
-	cookies?: {
-		get(name: string): string | undefined;
-		[name: string]: unknown;
-	};
-	/** Mutable per-request state bag. */
-	state: State;
+  /** Read-only access to headers. */
+  headers?:
+    | {
+        [name: string]: unknown;
+      }
+    | Headers;
+  /** Optional cookie access. */
+  cookies?: {
+    [name: string]: unknown;
+  };
+  /** Mutable per-request state bag. */
+  state: State;
 }
 
 /**

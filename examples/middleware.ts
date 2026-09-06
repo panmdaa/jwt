@@ -1,7 +1,7 @@
 // Run: node --experimental-strip-types examples/middleware.ts
 
 import { sign } from "@panmdaa/jwt";
-import { jwtAuth, JWT_CONTEXT_STATE_KEY } from "@panmdaa/jwt/middleware";
+import { jwtAuth } from "@panmdaa/jwt/middleware";
 
 const secret = "replace-me-with-a-long-random-secret";
 const token = sign({ role: "admin" }, secret, {
@@ -11,8 +11,8 @@ const token = sign({ role: "admin" }, secret, {
 });
 
 const context = {
-	headers: new Headers({ Authorization: `Bearer ${token}` }),
-	state: {},
+  headers: new Headers({ Authorization: `Bearer ${token}` }),
+  state: {}
 };
 
 const authenticate = jwtAuth({
@@ -22,5 +22,5 @@ const authenticate = jwtAuth({
 });
 
 await authenticate(context, () => {
-	console.log(context.state[JWT_CONTEXT_STATE_KEY]);
+	console.log("Authenticated!");
 });
