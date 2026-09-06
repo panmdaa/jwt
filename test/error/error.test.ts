@@ -35,7 +35,9 @@ describe("JwtError", () => {
 	it("falls back to the standard message when no message is given", () => {
 		const error = new JwtError(JWT_ERROR_CODES.INVALID_SIGNATURE);
 
-		expect(error.message).toBe(JWT_ERROR_MESSAGES[JWT_ERROR_CODES.INVALID_SIGNATURE]);
+		expect(error.message).toBe(
+			JWT_ERROR_MESSAGES[JWT_ERROR_CODES.INVALID_SIGNATURE],
+		);
 	});
 
 	it("isJwtError narrows JwtError instances only", () => {
@@ -48,9 +50,9 @@ describe("JwtError", () => {
 		const codes = Object.values(JWT_ERROR_CODES);
 
 		for (const code of codes) {
-			expect(JWT_ERROR_MESSAGES[code as keyof typeof JWT_ERROR_MESSAGES]).toBeTypeOf(
-				"string",
-			);
+			expect(
+				JWT_ERROR_MESSAGES[code as keyof typeof JWT_ERROR_MESSAGES],
+			).toBeTypeOf("string");
 		}
 	});
 });
@@ -84,7 +86,11 @@ describe("error classes", () => {
 
 	it("generated classes accept message, description and cause", () => {
 		const cause = new Error("underlying crypto error");
-		const error = new InvalidSignature("HMAC mismatch", "header.payload vs header.payload.sig", cause);
+		const error = new InvalidSignature(
+			"HMAC mismatch",
+			"header.payload vs header.payload.sig",
+			cause,
+		);
 
 		expect(error.message).toBe("HMAC mismatch");
 		expect(error.description).toBe("header.payload vs header.payload.sig");
@@ -94,6 +100,8 @@ describe("error classes", () => {
 	it("static classes expose their code", () => {
 		expect(MalformedToken.code).toBe(JWT_ERROR_CODES.MALFORMED_TOKEN);
 		expect(TokenExpired.code).toBe(JWT_ERROR_CODES.TOKEN_EXPIRED);
-		expect(InvalidKeyForAlgorithm.code).toBe(JWT_ERROR_CODES.INVALID_KEY_FOR_ALGORITHM);
+		expect(InvalidKeyForAlgorithm.code).toBe(
+			JWT_ERROR_CODES.INVALID_KEY_FOR_ALGORITHM,
+		);
 	});
 });

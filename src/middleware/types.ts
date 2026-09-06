@@ -4,7 +4,9 @@
  * Any framework that exposes a read-only header map and a mutable per-request
  * state object is structurally compatible with this contract.
  */
-export interface JwtContext<State extends Record<string, unknown> = Record<string, unknown>> {
+export interface JwtContext<
+	State extends Record<string, unknown> = Record<string, unknown>,
+> {
 	/** Read-only access to headers. */
 	headers?: {
 		get(name: string): string | undefined;

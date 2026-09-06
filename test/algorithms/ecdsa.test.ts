@@ -48,8 +48,12 @@ describe("ECDSA signing and verification", () => {
 			privateKeyEncoding: { type: "pkcs8", format: "pem" },
 		});
 
-		expect(() => signEcdsa("data", privateKey, "ES384")).toThrow(InvalidKeyForAlgorithm);
-		expect(() => verifyEcdsa("data", "signature", publicKey, "ES384")).toThrow(InvalidKeyForAlgorithm);
+		expect(() => signEcdsa("data", privateKey, "ES384")).toThrow(
+			InvalidKeyForAlgorithm,
+		);
+		expect(() => verifyEcdsa("data", "signature", publicKey, "ES384")).toThrow(
+			InvalidKeyForAlgorithm,
+		);
 	});
 
 	it("fails when the signature is altered", () => {

@@ -1,17 +1,17 @@
 {
-  "name": "@panmdaa/jwt-bench",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "bench": "npm run bench:hmac && npm run bench:rsa && npm run bench:ecdsa",
-    "bench:hmac": "tsx src/hmac.bench.ts",
-    "bench:rsa": "tsx src/rsa.bench.ts",
-    "bench:ecdsa": "tsx src/ecdsa.bench.ts"
-  },
-  "devDependencies": {
-    "tsx": "^4.19.3"
-  },
-  "dependencies": {
-    "@panmdaa/jwt": "file:.."
-  }
+	"name": "@panmdaa/jwt-bench",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"bench": "npm run bench:hmac && npm run bench:rsa && npm run bench:ecdsa",
+		"bench:hmac": "tsx src/hmac.bench.ts",
+		"bench:rsa": "tsx src/rsa.bench.ts",
+		"bench:ecdsa": "tsx src/ecdsa.bench.ts"
+	},
+	"devDependencies": {
+		"tsx": "^4.19.3"
+	},
+	"dependencies": {
+		"@panmdaa/jwt": "file:.."
+	}
 }

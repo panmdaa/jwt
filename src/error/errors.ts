@@ -76,8 +76,11 @@ export class InvalidKeyForAlgorithm extends JwtError {
 	static readonly code = JWT_ERROR_CODES.INVALID_KEY_FOR_ALGORITHM;
 
 	constructor(message?: string, description?: string, cause?: unknown) {
-		super(JWT_ERROR_CODES.INVALID_KEY_FOR_ALGORITHM, message, description, cause);
+		super(
+			JWT_ERROR_CODES.INVALID_KEY_FOR_ALGORITHM,
+			message,
+			description,
+			cause,
+		);
 	}
 }
-
-

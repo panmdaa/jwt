@@ -16,12 +16,18 @@ const server = new Server({
 		maxPayload: "1mb",
 		perMessageDeflate: { threshold: "1kb" },
 		verifyClient: ({ headers }) =>
-			headers.authorization === "Bearer secret" ||
-			({ ok: false, status: 403, message: "Forbidden" }),
+			headers.authorization === "Bearer secret" || {
+				ok: false,
+				status: 403,
+				message: "Forbidden",
+			},
 	},
 });
 
-const heartbeat = createWebSocketHeartbeat({ intervalMs: 30_000, timeoutMs: 10_000 });
+const heartbeat = createWebSocketHeartbeat({
+	intervalMs: 30_000,
+	timeoutMs: 10_000,
+});
 const clients = new Set<WebSocketConnection>();
 
 server.ws("/live", ({ socket }) => {
@@ -41,7 +47,8 @@ server.ws("/live", ({ socket }) => {
 });
 
 server.get("/close-all", ({ response }) => {
-	for (const socket of clients) socket.close(CloseCode.GoingAway, "server restart");
+	for (const socket of clients)
+		socket.close(CloseCode.GoingAway, "server restart");
 	response.send("closing all sockets");
 });
 

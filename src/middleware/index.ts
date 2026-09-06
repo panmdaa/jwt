@@ -22,7 +22,11 @@ export interface JwtAuthOptions {
 
 function getHeaderValue(context: JwtContext, name: string): string | undefined {
 	if (context.headers && typeof context.headers.get === "function") {
-		return context.headers.get(name) ?? context.headers.get(name.toLowerCase()) ?? undefined;
+		return (
+			context.headers.get(name) ??
+			context.headers.get(name.toLowerCase()) ??
+			undefined
+		);
 	}
 	if (context.headers && typeof context.headers === "object") {
 		const direct = context.headers[name] ?? context.headers[name.toLowerCase()];
@@ -42,7 +46,10 @@ function getCookieValue(context: JwtContext, name: string): string | undefined {
 	return undefined;
 }
 
-function extractToken(context: JwtContext, options: JwtAuthOptions): string | undefined {
+function extractToken(
+	context: JwtContext,
+	options: JwtAuthOptions,
+): string | undefined {
 	const source = options.tokenSource ?? "authorization";
 	if (source === "cookie") {
 		const cookieName = options.cookieName ?? "jwt";
@@ -67,7 +74,9 @@ function extractToken(context: JwtContext, options: JwtAuthOptions): string | un
  * On successful verification, the payload is attached to the request state under
  * the exported `JWT_CONTEXT_STATE_KEY` symbol.
  */
-export function jwtAuth<State extends Record<string, unknown> = Record<string, unknown>>(
+export function jwtAuth<
+	State extends Record<string, unknown> = Record<string, unknown>,
+>(
 	options: JwtAuthOptions,
 ): (context: JwtContext<State>, next: JwtNext) => Promise<unknown> | unknown {
 	const stateKey = options.stateKey ?? JWT_CONTEXT_STATE_KEY;
@@ -75,7 +84,10 @@ export function jwtAuth<State extends Record<string, unknown> = Record<string, u
 	return async function middleware(context: JwtContext<State>, next: JwtNext) {
 		const token = extractToken(context, options);
 		if (!token) {
-			throw new MalformedToken("Missing JWT token", "No token was found in the configured auth source");
+			throw new MalformedToken(
+				"Missing JWT token",
+				"No token was found in the configured auth source",
+			);
 		}
 
 		const payload = verify(token, options.key, {

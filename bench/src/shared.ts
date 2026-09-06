@@ -1,12 +1,25 @@
 import { generateKeyPairSync, randomBytes } from "node:crypto";
 
-export type AlgorithmName = "HS256" | "HS384" | "HS512" | "RS256" | "RS384" | "RS512" | "ES256" | "ES384" | "ES512";
+export type AlgorithmName =
+	| "HS256"
+	| "HS384"
+	| "HS512"
+	| "RS256"
+	| "RS384"
+	| "RS512"
+	| "ES256"
+	| "ES384"
+	| "ES512";
 
 export const HMAC_ALGORITHMS = ["HS256", "HS384", "HS512"] as const;
 export const RSA_ALGORITHMS = ["RS256", "RS384", "RS512"] as const;
 export const ECDSA_ALGORITHMS = ["ES256", "ES384", "ES512"] as const;
 
-export const ALL_ALGORITHMS: AlgorithmName[] = [...HMAC_ALGORITHMS, ...RSA_ALGORITHMS, ...ECDSA_ALGORITHMS];
+export const ALL_ALGORITHMS: AlgorithmName[] = [
+	...HMAC_ALGORITHMS,
+	...RSA_ALGORITHMS,
+	...ECDSA_ALGORITHMS,
+];
 
 export function getHmacKeys() {
 	return {
@@ -32,12 +45,18 @@ export function getEcdsaKeys() {
 	};
 }
 
-export function benchmarkOperation(name: string, operation: () => void, iterations: number): void {
+export function benchmarkOperation(
+	name: string,
+	operation: () => void,
+	iterations: number,
+): void {
 	const start = performance.now();
 	for (let i = 0; i < iterations; i++) {
 		operation();
 	}
 	const elapsedMs = performance.now() - start;
 	const opsPerSecond = (iterations / elapsedMs) * 1000;
-	console.log(`${name}: ${opsPerSecond.toFixed(2)} ops/sec (${iterations} iterations in ${elapsedMs.toFixed(2)}ms)`);
+	console.log(
+		`${name}: ${opsPerSecond.toFixed(2)} ops/sec (${iterations} iterations in ${elapsedMs.toFixed(2)}ms)`,
+	);
 }

@@ -1,4 +1,10 @@
-import { createPrivateKey, createPublicKey, type KeyObject, sign, verify } from "node:crypto";
+import {
+	createPrivateKey,
+	createPublicKey,
+	type KeyObject,
+	sign,
+	verify,
+} from "node:crypto";
 import { InvalidKeyForAlgorithm } from "../error/errors";
 
 export const RSA_ALGORITHMS = {
@@ -16,10 +22,15 @@ export type RsaAlgorithm = keyof typeof RSA_ALGORITHMS;
  * @returns A validated RSA private KeyObject
  * @throws InvalidKeyForAlgorithm if the key is not RSA
  */
-export function normalizeRsaPrivateKey(key: string | Buffer | KeyObject): KeyObject {
+export function normalizeRsaPrivateKey(
+	key: string | Buffer | KeyObject,
+): KeyObject {
 	let keyObject: KeyObject;
 	try {
-		keyObject = typeof key === "string" || Buffer.isBuffer(key) ? createPrivateKey(key) : key;
+		keyObject =
+			typeof key === "string" || Buffer.isBuffer(key)
+				? createPrivateKey(key)
+				: key;
 	} catch {
 		throw new InvalidKeyForAlgorithm(
 			"Private key is not a valid RSA private key",
@@ -44,10 +55,15 @@ export function normalizeRsaPrivateKey(key: string | Buffer | KeyObject): KeyObj
  * @returns A validated RSA public KeyObject
  * @throws InvalidKeyForAlgorithm if the key is not RSA
  */
-export function normalizeRsaPublicKey(key: string | Buffer | KeyObject): KeyObject {
+export function normalizeRsaPublicKey(
+	key: string | Buffer | KeyObject,
+): KeyObject {
 	let keyObject: KeyObject;
 	try {
-		keyObject = typeof key === "string" || Buffer.isBuffer(key) ? createPublicKey(key) : key;
+		keyObject =
+			typeof key === "string" || Buffer.isBuffer(key)
+				? createPublicKey(key)
+				: key;
 	} catch {
 		throw new InvalidKeyForAlgorithm(
 			"Public key is not a valid RSA public key",
@@ -79,7 +95,8 @@ export function signRsa(
 	algorithm: RsaAlgorithm = "RS256",
 ): Buffer {
 	const normalizedKey = normalizeRsaPrivateKey(privateKey);
-	const input = typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
+	const input =
+		typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
 	return sign(RSA_ALGORITHMS[algorithm], input, normalizedKey);
 }
 
@@ -99,7 +116,16 @@ export function verifyRsa(
 	algorithm: RsaAlgorithm = "RS256",
 ): boolean {
 	const normalizedKey = normalizeRsaPublicKey(publicKey);
-	const input = typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
-	const signatureBuffer = typeof signature === "string" ? Buffer.from(signature, "utf8") : Buffer.from(signature);
-	return verify(RSA_ALGORITHMS[algorithm], input, normalizedKey, signatureBuffer);
+	const input =
+		typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
+	const signatureBuffer =
+		typeof signature === "string"
+			? Buffer.from(signature, "utf8")
+			: Buffer.from(signature);
+	return verify(
+		RSA_ALGORITHMS[algorithm],
+		input,
+		normalizedKey,
+		signatureBuffer,
+	);
 }

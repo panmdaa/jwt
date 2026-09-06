@@ -63,7 +63,9 @@ export function deserializeFromBase64Url(encoded: string): unknown {
 	try {
 		obj = JSON.parse(json);
 	} catch (err) {
-		throw new Error(`Failed to parse JSON from base64url payload: ${String(err)}`);
+		throw new Error(
+			`Failed to parse JSON from base64url payload: ${String(err)}`,
+		);
 	}
 
 	if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {

@@ -5,13 +5,19 @@ const secret = "super-secret";
 
 describe("sign", () => {
 	it("creates a 3-part JWT with valid header and payload", () => {
-		const token = sign({ sub: "user_123", foo: "bar" }, secret, { alg: "HS256" });
+		const token = sign({ sub: "user_123", foo: "bar" }, secret, {
+			alg: "HS256",
+		});
 		const parts = token.split(".");
 
 		expect(parts).toHaveLength(3);
 		const [headerSegment, payloadSegment] = parts;
-		const header = JSON.parse(Buffer.from(headerSegment, "base64url").toString("utf8"));
-		const payload = JSON.parse(Buffer.from(payloadSegment, "base64url").toString("utf8"));
+		const header = JSON.parse(
+			Buffer.from(headerSegment, "base64url").toString("utf8"),
+		);
+		const payload = JSON.parse(
+			Buffer.from(payloadSegment, "base64url").toString("utf8"),
+		);
 
 		expect(header).toMatchObject({ alg: "HS256", typ: "JWT" });
 		expect(payload).toMatchObject({ sub: "user_123", foo: "bar" });
@@ -26,7 +32,9 @@ describe("sign", () => {
 			notBefore: "30s",
 		});
 		const [, payloadSegment] = token.split(".");
-		const payload = JSON.parse(Buffer.from(payloadSegment, "base64url").toString("utf8"));
+		const payload = JSON.parse(
+			Buffer.from(payloadSegment, "base64url").toString("utf8"),
+		);
 		const after = Math.floor(Date.now() / 1000);
 
 		expect(payload.iat).toBeGreaterThanOrEqual(before);
@@ -37,7 +45,13 @@ describe("sign", () => {
 
 	it("prefers explicit options over payload claims", () => {
 		const token = sign(
-			{ iss: "manual-issuer", sub: "manual-subject", aud: "manual-audience", exp: 1, iat: 9 },
+			{
+				iss: "manual-issuer",
+				sub: "manual-subject",
+				aud: "manual-audience",
+				exp: 1,
+				iat: 9,
+			},
 			secret,
 			{
 				alg: "HS256",
@@ -49,7 +63,9 @@ describe("sign", () => {
 			},
 		);
 		const [, payloadSegment] = token.split(".");
-		const payload = JSON.parse(Buffer.from(payloadSegment, "base64url").toString("utf8"));
+		const payload = JSON.parse(
+			Buffer.from(payloadSegment, "base64url").toString("utf8"),
+		);
 
 		expect(payload.iss).toBe("option-issuer");
 		expect(payload.sub).toBe("option-subject");

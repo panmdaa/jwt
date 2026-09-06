@@ -4,4 +4,3 @@ export { decode } from "./jwt/decode";
 
 export type { Algorithm } from "./algorithms";
 export * from "./error";
-

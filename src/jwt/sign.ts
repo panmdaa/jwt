@@ -51,7 +51,11 @@ export function sign(
 		...(options.kid ? { kid: options.kid } : {}),
 	};
 
-	if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+	if (
+		typeof payload !== "object" ||
+		payload === null ||
+		Array.isArray(payload)
+	) {
 		throw new Error("Payload must be a plain object");
 	}
 
@@ -65,8 +69,10 @@ export function sign(
 	if (options.audience !== undefined) explicitClaims.aud = options.audience;
 	if (options.subject !== undefined) explicitClaims.sub = options.subject;
 	if (options.jwtid !== undefined) explicitClaims.jti = options.jwtid;
-	if (options.expiresIn !== undefined) explicitClaims.exp = currentTime + parseDuration(options.expiresIn);
-	if (options.notBefore !== undefined) explicitClaims.nbf = currentTime + parseDuration(options.notBefore);
+	if (options.expiresIn !== undefined)
+		explicitClaims.exp = currentTime + parseDuration(options.expiresIn);
+	if (options.notBefore !== undefined)
+		explicitClaims.nbf = currentTime + parseDuration(options.notBefore);
 	if (options.addIssuedAt === false) {
 		delete (normalizedPayload as JwtPayload).iat;
 	} else {
@@ -82,7 +88,11 @@ export function sign(
 		Object.entries(mergedPayload).filter(([, value]) => value !== undefined),
 	) as JwtPayload;
 
-	if (typeof payloadObject !== "object" || payloadObject === null || Array.isArray(payloadObject)) {
+	if (
+		typeof payloadObject !== "object" ||
+		payloadObject === null ||
+		Array.isArray(payloadObject)
+	) {
 		throw new Error("Payload must be a plain object");
 	}
 

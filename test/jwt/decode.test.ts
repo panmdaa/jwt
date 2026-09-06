@@ -5,7 +5,9 @@ import { MalformedToken } from "../../src/error/errors";
 
 describe("decode", () => {
 	it("decodes a valid token correctly", () => {
-		const token = sign({ sub: "user_123", foo: "bar" }, "secret", { alg: "HS256" });
+		const token = sign({ sub: "user_123", foo: "bar" }, "secret", {
+			alg: "HS256",
+		});
 		const decoded = decode(token);
 
 		expect(decoded.header).toMatchObject({ alg: "HS256", typ: "JWT" });

@@ -12,20 +12,27 @@ export const JWT_ERROR_CODES = {
 	INVALID_KEY_FOR_ALGORITHM: "ERR_INVALID_KEY_FOR_ALGORITHM",
 } as const;
 
-export type JwtErrorCode = (typeof JWT_ERROR_CODES)[keyof typeof JWT_ERROR_CODES];
+export type JwtErrorCode =
+	(typeof JWT_ERROR_CODES)[keyof typeof JWT_ERROR_CODES];
 
 /** Standard error messages for each JWT error code. */
 export const JWT_ERROR_MESSAGES: Record<JwtErrorCode, string> = {
-	[JWT_ERROR_CODES.MALFORMED_TOKEN]: "Token is malformed or has invalid structure",
+	[JWT_ERROR_CODES.MALFORMED_TOKEN]:
+		"Token is malformed or has invalid structure",
 	[JWT_ERROR_CODES.INVALID_SIGNATURE]: "Token signature verification failed",
-	[JWT_ERROR_CODES.ALGORITHM_NOT_ALLOWED]: "Algorithm is not permitted for this operation",
+	[JWT_ERROR_CODES.ALGORITHM_NOT_ALLOWED]:
+		"Algorithm is not permitted for this operation",
 	[JWT_ERROR_CODES.ALGORITHM_NONE]: "Algorithm 'none' is not allowed",
 	[JWT_ERROR_CODES.TOKEN_EXPIRED]: "Token has expired",
 	[JWT_ERROR_CODES.TOKEN_NOT_YET_VALID]: "Token is not yet valid (nbf)",
-	[JWT_ERROR_CODES.AUDIENCE_MISMATCH]: "Token audience claim does not match expected value",
-	[JWT_ERROR_CODES.ISSUER_MISMATCH]: "Token issuer claim does not match expected value",
-	[JWT_ERROR_CODES.SUBJECT_MISMATCH]: "Token subject claim does not match expected value",
-	[JWT_ERROR_CODES.INVALID_KEY_FOR_ALGORITHM]: "Cryptographic key is invalid for the specified algorithm",
+	[JWT_ERROR_CODES.AUDIENCE_MISMATCH]:
+		"Token audience claim does not match expected value",
+	[JWT_ERROR_CODES.ISSUER_MISMATCH]:
+		"Token issuer claim does not match expected value",
+	[JWT_ERROR_CODES.SUBJECT_MISMATCH]:
+		"Token subject claim does not match expected value",
+	[JWT_ERROR_CODES.INVALID_KEY_FOR_ALGORITHM]:
+		"Cryptographic key is invalid for the specified algorithm",
 };
 
 /**

@@ -8,10 +8,18 @@ for (const algorithm of ECDSA_ALGORITHMS) {
 	const keyPair = ecdsaKeys[algorithm];
 	const payload = { sub: "bench-user", foo: "bar" };
 	const token = sign(payload, keyPair.privateKey, { alg: algorithm });
-	benchmarkOperation(`sign ${algorithm}`, () => {
-		sign(payload, keyPair.privateKey, { alg: algorithm });
-	}, 400);
-	benchmarkOperation(`verify ${algorithm}`, () => {
-		verify(token, keyPair.publicKey, { algorithms: [algorithm] });
-	}, 400);
+	benchmarkOperation(
+		`sign ${algorithm}`,
+		() => {
+			sign(payload, keyPair.privateKey, { alg: algorithm });
+		},
+		400,
+	);
+	benchmarkOperation(
+		`verify ${algorithm}`,
+		() => {
+			verify(token, keyPair.publicKey, { algorithms: [algorithm] });
+		},
+		400,
+	);
 }

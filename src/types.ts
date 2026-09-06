@@ -24,7 +24,9 @@ export interface StandardJwtClaims {
 /**
  * JWT payload type with standard and custom claims.
  */
-export type JwtPayload<T extends Record<string, unknown> = Record<string, unknown>> = StandardJwtClaims & T;
+export type JwtPayload<
+	T extends Record<string, unknown> = Record<string, unknown>,
+> = StandardJwtClaims & T;
 
 /**
  * JWS header object.

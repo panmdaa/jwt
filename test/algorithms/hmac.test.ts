@@ -73,6 +73,11 @@ describe("HMAC signing and verification", () => {
 		const right = Buffer.from([1, 2, 3, 4]);
 
 		expect(compareBuffersConstantTime(left, right)).toBe(false);
-		expect(compareBuffersConstantTime(Buffer.from([1, 2, 3]), Buffer.from([1, 2, 3]))).toBe(true);
+		expect(
+			compareBuffersConstantTime(
+				Buffer.from([1, 2, 3]),
+				Buffer.from([1, 2, 3]),
+			),
+		).toBe(true);
 	});
 });

@@ -19,13 +19,17 @@ export function parseDuration(duration: number | string): number {
 	// Handle plain numbers
 	if (typeof duration === "number") {
 		if (!Number.isInteger(duration) || duration < 0) {
-			throw new Error(`Invalid duration: must be a non-negative integer in seconds, got ${duration}`);
+			throw new Error(
+				`Invalid duration: must be a non-negative integer in seconds, got ${duration}`,
+			);
 		}
 		return duration;
 	}
 
 	if (typeof duration !== "string") {
-		throw new Error(`Invalid duration type: expected number or string, got ${typeof duration}`);
+		throw new Error(
+			`Invalid duration type: expected number or string, got ${typeof duration}`,
+		);
 	}
 
 	const trimmed = duration.trim();
@@ -49,7 +53,9 @@ export function parseDuration(duration: number | string): number {
 	const value = Number.parseFloat(valueStr);
 
 	if (value < 0) {
-		throw new Error(`Invalid duration: value must be non-negative, got ${value}`);
+		throw new Error(
+			`Invalid duration: value must be non-negative, got ${value}`,
+		);
 	}
 
 	// Convert to seconds based on unit

@@ -1,4 +1,10 @@
-import { createPrivateKey, createPublicKey, type KeyObject, sign, verify } from "node:crypto";
+import {
+	createPrivateKey,
+	createPublicKey,
+	type KeyObject,
+	sign,
+	verify,
+} from "node:crypto";
 import { InvalidKeyForAlgorithm } from "../error/errors";
 
 export const ECDSA_ALGORITHMS = {
@@ -22,7 +28,10 @@ export function normalizeEcdsaPrivateKey(
 ): KeyObject {
 	let keyObject: KeyObject;
 	try {
-		keyObject = typeof key === "string" || Buffer.isBuffer(key) ? createPrivateKey(key) : key;
+		keyObject =
+			typeof key === "string" || Buffer.isBuffer(key)
+				? createPrivateKey(key)
+				: key;
 	} catch {
 		throw new InvalidKeyForAlgorithm(
 			"Private key is not a valid EC private key",
@@ -62,7 +71,10 @@ export function normalizeEcdsaPublicKey(
 ): KeyObject {
 	let keyObject: KeyObject;
 	try {
-		keyObject = typeof key === "string" || Buffer.isBuffer(key) ? createPublicKey(key) : key;
+		keyObject =
+			typeof key === "string" || Buffer.isBuffer(key)
+				? createPublicKey(key)
+				: key;
 	} catch {
 		throw new InvalidKeyForAlgorithm(
 			"Public key is not a valid EC public key",
@@ -103,7 +115,8 @@ export function signEcdsa(
 	algorithm: EcdsaAlgorithm = "ES256",
 ): Buffer {
 	const normalizedKey = normalizeEcdsaPrivateKey(privateKey, algorithm);
-	const input = typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
+	const input =
+		typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
 	const signature = sign(ECDSA_ALGORITHMS[algorithm].hash, input, {
 		key: normalizedKey,
 		dsaEncoding: "ieee-p1363",
@@ -128,11 +141,20 @@ export function verifyEcdsa(
 	algorithm: EcdsaAlgorithm = "ES256",
 ): boolean {
 	const normalizedKey = normalizeEcdsaPublicKey(publicKey, algorithm);
-	const input = typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
-	const signatureBuffer = typeof signature === "string" ? Buffer.from(signature, "utf8") : Buffer.from(signature);
-	return verify(ECDSA_ALGORITHMS[algorithm].hash, input, {
-		key: normalizedKey,
-		dsaEncoding: "ieee-p1363",
-		padding: undefined,
-	}, signatureBuffer);
+	const input =
+		typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
+	const signatureBuffer =
+		typeof signature === "string"
+			? Buffer.from(signature, "utf8")
+			: Buffer.from(signature);
+	return verify(
+		ECDSA_ALGORITHMS[algorithm].hash,
+		input,
+		{
+			key: normalizedKey,
+			dsaEncoding: "ieee-p1363",
+			padding: undefined,
+		},
+		signatureBuffer,
+	);
 }

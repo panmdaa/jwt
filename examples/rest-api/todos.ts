@@ -66,10 +66,14 @@ const server = new Server({
 });
 
 server.use(securityHeaders());
-server.use(cors({ allowOrigin: "*", allowMethods: ["GET", "POST", "PATCH", "DELETE"] }));
+server.use(
+	cors({ allowOrigin: "*", allowMethods: ["GET", "POST", "PATCH", "DELETE"] }),
+);
 
 server.router("/api/todos", todoRouter);
 server.get("/", ({ response }) => response.send("Todo API — try /api/todos"));
 
 server.listen(3000);
-console.log(`Listening on http://localhost:${server.address()?.port}/api/todos`);
+console.log(
+	`Listening on http://localhost:${server.address()?.port}/api/todos`,
+);

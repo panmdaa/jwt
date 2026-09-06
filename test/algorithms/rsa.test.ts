@@ -73,9 +73,15 @@ describe("RSA signing and verification", () => {
 			privateKeyEncoding: { type: "pkcs8", format: "pem" },
 		});
 
-		expect(() => signRsa("data", ecPublicKey as any, "RS256")).toThrow(InvalidKeyForAlgorithm);
-		expect(() => verifyRsa("data", "signature", ecPublicKey as any, "RS256")).toThrow(InvalidKeyForAlgorithm);
-		expect(() => verifyRsa("data", "signature", "this-is-not-a-valid-key", "RS256")).toThrow(InvalidKeyForAlgorithm);
+		expect(() => signRsa("data", ecPublicKey as any, "RS256")).toThrow(
+			InvalidKeyForAlgorithm,
+		);
+		expect(() =>
+			verifyRsa("data", "signature", ecPublicKey as any, "RS256"),
+		).toThrow(InvalidKeyForAlgorithm);
+		expect(() =>
+			verifyRsa("data", "signature", "this-is-not-a-valid-key", "RS256"),
+		).toThrow(InvalidKeyForAlgorithm);
 		expect(() => signRsa("data", privateKey, "RS256")).not.toThrow();
 	});
 

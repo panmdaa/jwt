@@ -13,7 +13,11 @@ export * from "./ecdsa";
  */
 export interface AlgorithmImplementation {
 	sign(data: string | Buffer | Uint8Array, key: any): Buffer;
-	verify(data: string | Buffer | Uint8Array, signature: string | Buffer | Uint8Array, key: any): boolean;
+	verify(
+		data: string | Buffer | Uint8Array,
+		signature: string | Buffer | Uint8Array,
+		key: any,
+	): boolean;
 }
 
 /**
@@ -51,15 +55,18 @@ const ALGORITHMS_REGISTRY: Record<Algorithm, AlgorithmImplementation> = {
 	},
 	ES256: {
 		sign: (data, key) => signEcdsa(data, key, "ES256"),
-		verify: (data, signature, key) => verifyEcdsa(data, signature, key, "ES256"),
+		verify: (data, signature, key) =>
+			verifyEcdsa(data, signature, key, "ES256"),
 	},
 	ES384: {
 		sign: (data, key) => signEcdsa(data, key, "ES384"),
-		verify: (data, signature, key) => verifyEcdsa(data, signature, key, "ES384"),
+		verify: (data, signature, key) =>
+			verifyEcdsa(data, signature, key, "ES384"),
 	},
 	ES512: {
 		sign: (data, key) => signEcdsa(data, key, "ES512"),
-		verify: (data, signature, key) => verifyEcdsa(data, signature, key, "ES512"),
+		verify: (data, signature, key) =>
+			verifyEcdsa(data, signature, key, "ES512"),
 	},
 };
 
@@ -73,7 +80,10 @@ const ALGORITHMS_REGISTRY: Record<Algorithm, AlgorithmImplementation> = {
  */
 export function getAlgorithm(algorithm: string): AlgorithmImplementation {
 	if (algorithm === "none") {
-		throw new AlgorithmNone("Algorithm 'none' is not allowed", "The 'none' algorithm is explicitly forbidden in JWT");
+		throw new AlgorithmNone(
+			"Algorithm 'none' is not allowed",
+			"The 'none' algorithm is explicitly forbidden in JWT",
+		);
 	}
 
 	if (!algorithm || !(algorithm in ALGORITHMS_REGISTRY)) {

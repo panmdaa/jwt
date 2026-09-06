@@ -16,12 +16,15 @@ describe("Algorithm registry", () => {
 		"ES512",
 	];
 
-	it.each(supportedAlgorithms)("%s resolves to a functional implementation", (algorithm) => {
-		const impl = getAlgorithm(algorithm);
-		expect(impl).toBeDefined();
-		expect(impl.sign).toBeInstanceOf(Function);
-		expect(impl.verify).toBeInstanceOf(Function);
-	});
+	it.each(supportedAlgorithms)(
+		"%s resolves to a functional implementation",
+		(algorithm) => {
+			const impl = getAlgorithm(algorithm);
+			expect(impl).toBeDefined();
+			expect(impl.sign).toBeInstanceOf(Function);
+			expect(impl.verify).toBeInstanceOf(Function);
+		},
+	);
 
 	it("all HMAC algorithms work with a symmetric key", () => {
 		const key = randomBytes(32);
@@ -35,7 +38,9 @@ describe("Algorithm registry", () => {
 	});
 
 	it("all RSA algorithms work with an RSA key pair", () => {
-		const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+		const { privateKey, publicKey } = generateKeyPairSync("rsa", {
+			modulusLength: 2048,
+		});
 		const data = "test.data";
 
 		for (const alg of ["RS256", "RS384", "RS512"]) {
@@ -50,7 +55,9 @@ describe("Algorithm registry", () => {
 		const algorithms = ["ES256", "ES384", "ES512"];
 
 		for (let i = 0; i < algorithms.length; i++) {
-			const { privateKey, publicKey } = generateKeyPairSync("ec", { namedCurve: curves[i] });
+			const { privateKey, publicKey } = generateKeyPairSync("ec", {
+				namedCurve: curves[i],
+			});
 			const data = "test.data";
 			const impl = getAlgorithm(algorithms[i]);
 			const signature = impl.sign(data, privateKey);

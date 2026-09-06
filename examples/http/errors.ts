@@ -2,7 +2,13 @@
 // Throw typed errors, get mapped responses. Unknown errors become 500.
 // Run: node --experimental-strip-types examples/http/errors.ts
 
-import { Server, NotFound, BadRequest, HttpError, isHttpError } from "@panmdaa/server";
+import {
+	Server,
+	NotFound,
+	BadRequest,
+	HttpError,
+	isHttpError,
+} from "@panmdaa/server";
 
 const server = new Server({
 	onError: (error) => console.error("[onError]", error),

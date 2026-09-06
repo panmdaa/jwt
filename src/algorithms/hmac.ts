@@ -15,7 +15,9 @@ export type HmacAlgorithm = keyof typeof HMAC_ALGORITHMS;
  * @returns A Buffer containing the normalized secret
  */
 export function normalizeHmacSecret(secret: string | Buffer): Buffer {
-	return Buffer.isBuffer(secret) ? Buffer.from(secret) : Buffer.from(secret, "utf8");
+	return Buffer.isBuffer(secret)
+		? Buffer.from(secret)
+		: Buffer.from(secret, "utf8");
 }
 
 /**
@@ -32,7 +34,8 @@ export function signHmac(
 	algorithm: HmacAlgorithm = "HS256",
 ): Buffer {
 	const normalizedSecret = normalizeHmacSecret(secret);
-	const input = typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
+	const input =
+		typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.from(data);
 	const hash = createHmac(HMAC_ALGORITHMS[algorithm], normalizedSecret);
 	hash.update(input);
 	return hash.digest();
@@ -46,7 +49,10 @@ export function signHmac(
  * @param right Second buffer
  * @returns `true` when the buffers match, `false` otherwise
  */
-export function compareBuffersConstantTime(left: Buffer, right: Buffer): boolean {
+export function compareBuffersConstantTime(
+	left: Buffer,
+	right: Buffer,
+): boolean {
 	const length = Math.max(left.length, right.length);
 	const leftPadded = Buffer.alloc(length, 0);
 	const rightPadded = Buffer.alloc(length, 0);

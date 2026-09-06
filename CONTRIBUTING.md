@@ -122,7 +122,7 @@ Feedback is meant to improve the project. Questions, iterations, and design disc
 
 ## Need Help?
 
-If you are unsure whether an idea fits `@panmdaa/server`, open an issue and describe:
+If you are unsure whether an idea fits `@panmdaa/jwt`, open an issue and describe:
 
 - the use case
 - the proposed API or behavior
