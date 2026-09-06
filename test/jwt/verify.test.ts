@@ -53,7 +53,10 @@ describe("verify", () => {
 
 	it("rejects invalid signatures", () => {
 		const token = sign({ sub: "user" }, "secret", { alg: "HS256" });
-		const tampered = token.slice(0, -1) + (token.at(-1) === "A" ? "B" : "A");
+		const [header, payload, signature] = token.split(".");
+		const tamperedSignature =
+			(signature?.at(0) === "A" ? "B" : "A") + signature?.slice(1);
+		const tampered = `${header}.${payload}.${tamperedSignature}`;
 		expect(() => verify(tampered, "secret", { algorithms: ["HS256"] })).toThrow(
 			InvalidSignature,
 		);
