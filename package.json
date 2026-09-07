@@ -1,77 +1,78 @@
 {
-	"name": "@panmdaa/jwt",
-	"private": false,
-	"version": "0.1.1",
-	"description": "Zero-dependency TypeScript library for signing and verifying JSON Web Tokens (HMAC, RSA, ECDSA) based on RFC 7519/7515/7518",
-	"license": "MIT",
-	"author": {
-		"name": "Panmdaa",
-		"email": "is.kkokotero@gmail.com",
-		"url": "https://github.com/panmdaa"
-	},
-	"keywords": [
-		"panmdaa",
-		"jwt",
-		"jws",
-		"jwa",
-		"hmac",
-		"rsa",
-		"ecdsa",
-		"auth",
-		"token",
-		"typescript",
-		"zero-dependencies"
-	],
-	"type": "module",
-	"sideEffects": false,
-	"engines": {
-		"node": ">=18"
-	},
-	"publishConfig": {
-		"access": "public",
-		"provenance": true
-	},
-	"scripts": {
-		"prepare": "tsup && tsc -p tsconfig.build.json",
-		"build": "tsup && tsc -p tsconfig.build.json",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"typecheck": "tsc --noEmit",
-		"lint": "biome lint --write .",
-		"format": "biome format --write .",
-		"bench": "npm --prefix bench run bench"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/panmdaa/jwt.git"
-	},
-	"homepage": "https://github.com/panmdaa/jwt#readme",
-	"bugs": {
-		"url": "https://github.com/panmdaa/jwt/issues"
-	},
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./middleware": {
-			"types": "./dist/middleware/index.d.ts",
-			"default": "./dist/middleware/index.js"
-		}
-	},
-	"types": "./dist/index.d.ts",
-	"main": "./dist/index.js",
-	"files": [
-		"dist",
-		"misc",
-		"LICENSE",
-		"README.md"
-	],
-	"devDependencies": {
-		"@biomejs/biome": "^2.5.6",
-		"@types/node": "^22.15.0",
-		"tsup": "^8.4.0",
-		"typescript": "^7.0.2",
-		"vitest": "^3.2.7"
-	}
+  "name": "@panmdaa/jwt",
+  "private": false,
+  "version": "0.1.1",
+  "description": "Zero-dependency TypeScript library for signing and verifying JSON Web Tokens (HMAC, RSA, ECDSA) based on RFC 7519/7515/7518",
+  "license": "MIT",
+  "author": {
+    "name": "Panmdaa",
+    "email": "is.kkokotero@gmail.com",
+    "url": "https://github.com/panmdaa"
+  },
+  "keywords": [
+    "panmdaa",
+    "jwt",
+    "jws",
+    "jwa",
+    "hmac",
+    "rsa",
+    "ecdsa",
+    "auth",
+    "token",
+    "typescript",
+    "zero-dependencies"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "prepare": "tsup && tsc -p tsconfig.build.json",
+    "build": "tsup && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint --write .",
+    "format": "biome format --write .",
+    "bench": "npm --prefix bench run bench"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panmdaa/jwt.git"
+  },
+  "homepage": "https://github.com/panmdaa/jwt#readme",
+  "bugs": {
+    "url": "https://github.com/panmdaa/jwt/issues"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./middleware": {
+      "types": "./dist/middleware/index.d.ts",
+      "default": "./dist/middleware/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "misc",
+    "LICENSE",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.6",
+    "@types/node": "^22.15.0",
+    "tsup": "^8.4.0",
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.7",
+    "tsx": "^4.19.3"
+  }
 }
